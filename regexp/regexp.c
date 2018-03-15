@@ -40,7 +40,43 @@ int matchstar(int c,char *regexp,char *text)//³¢ÊÔÆ¥ÅäÖØ¸´µÄÎÄ±¾×Ö·ûc£¬´ÓÁãÖØ¸´¿
 		/*a*matches zero or more instances*/
 		if(matchhere(regexp,text))
 		return 1;
-	}while(*text!='\0'&&(*text++==c||c=='.'));
+	}while(*text!='\0'&&(*text++==c||c=='.'));//ÎÞÂÛÔÚÊ²Ã´Çé¿öÏÂ£¬ÎÒÃÇ¶¼±ØÐëÍÆ½øtext×Ö·û´®ÖÐµÄÒ»¸ö»ò¶à¸ö×Ö·û£¬Òò´ËÔÚtext++ÖÐµÄµÝÔöÔËËãÒ»¶¨ÒªÖ´ÐÐ 
 	return 0;
 }
+ 
+ 
+ /*
+ 	¸Ä½ø£ºmatchhereÖÐÔÚ´¦Àí*Ö®Ç°Ê×ÏÈ´¦Àí$.
+	ËäÈ»ÕâÖÖ°²ÅÅ²»»á¶Ôº¯ÊýµÄÖ´ÐÐ´øÀ´Ó°Ïì£¬µ«È´Ê¹º¯Êý¿´ÉÏÈ¥Òª×ÔÈ»Ò»Ð©
+	ÔÚ±à³ÌÖÐÒ»¸öÁ¼ºÃµÄ¹æÔò¾ÍÊÇ£ºÔÚ´¦Àí¸´ÔÓµÄÇé¿öÖ®Ç°Ê×ÏÈ´¦ÀíÈÝÒ×µÄÇé¿ö
+	
+	ÖÕÖ¹Ìõ¼þ1.Æ¥Åä¹ý³ÌµÄ³É¹¦Óë·ñ£¬ÊÇÍ¨¹ýÅÐ¶ÏÕýÔò±í´ïÊ½ºÍtextÖÐµÄ×Ö·ûÊÇ²»ÊÇÍ¬Ê±´¦ÀíÍêÀ´¾ö¶¨µÄ¡£
+	if(regexp[0]=='$'&&regexp[1]=='\0') return *text=='\0';
+*/
+
+/*matchstar:leftmost longest search for c*regexp*/
+int matchstar(int c,char *regexp,char *text)
+{
+	char *t;
+	for(t=text;*t!='\0'&&(*t==c||c=='.');t++)//ÈôÒªÊ¶±ð×î×ó±ßÒÔ¼°×î³¤µÄÆ¥Åä£¬ÄÇÃ´º¯Êý½«Ê×ÏÈÊ¶±ðÊäÈë×Ö·ûcµÄ×î´óÖØ¸´ÐòÁÐ 
+	;
+	do{
+		//* matches zero or more
+		if(matchhere(regexp,t))//µ÷ÓÃmatchhere³¢ÊÔ°ÑÆ¥ÅäÑÓÉìµ½ÕýÔò±í´ïÊ½µÄÊ£Óà²¿·ÖºÍtextµÄÊ£Óà²¿·Ö¡£ 
+		return 1;//Ã¿´ÎÆ¥ÅäÊ§°Ü¶¼»á½«csµÄ³öÏÖ´ÎÊý-1£¬È»ºóÔÙ´Î¿ªÊ¼³¢ÊÔ£¬°üÀ¨´¦ÀíÁã³öÏÖµÄÇé¿ö 
+	}while(t-->text);
+	return 0;
+ } 
+ 
+ /*
+ 	Õâ¶Î´úÂë³ä·ÖËµÃ÷ÁËÓÅÁ¼Ëã·¨µÄÖØÒªÐÔ¡£Èç¹ûÔÚÄ£Ê½ÖÐ°üº¬ÁË¼¸¸ö.*ÐòÁÐ£¬ÄÇÃ´ÔÚ¼òµ¥µÄÊµÏÖÖÐ½«ÐèÒª½øÐÐ´óÁ¿µÄ»ØËÝ²Ù×÷£¬²¢ÇÒÔÚÄ³Ð©Çé¿öÏÂ½«»áÔËÐÐµÃ¼«Âý
+	 
+	 
+	ÔÚ±ê×¼µÄUnix grepÖÐÓÐÍ¬ÑùµÄ»ØËÝ²Ù×÷£¬ÀýÈç
+	grep 'a.*a.*a.*a.a'
+	ÔÚÆÕÍ¨µÄ»úÆ÷ÉÏ´¦ÀíÒ»¸ö4MBµÄÎÄ±¾ÎÄ¼þÒª»¨·Ñ20ÃëµÄÊ±¼ä
+	Èç¹ûÄ³¸öÊµÏÖÊÇ»ùÓÚ°Ñ·ÇÈ·¶¨ÓÐÏÞ×Ô¶¯»ú×ª»»ÎªÈ·¶¨ÓÐÏÞ×Ô¶¯»ú£¬ÀýÈçegrep£¬ÄÇÃ´ÔÚ´¦Àí¶ñÁÓµÄÇé¿öÊ±½«»á»ñµÃ±È½ÏºÃµÄÐÔÄÜ£»
+	Ëü¿ÉÒÔÔÚ²»µ½Ê®·ÖÖ®Ò»ÃëµÄÊ±¼äÄÚ´¦ÀíÍ¬ÑùµÄÄ£Ê½ºÍÍ¬ÑùµÄÊäÈë£¬²¢ÇÒÔËÐÐÊ±¼äÍ¨³£ÊÇ¶ÀÁ¢ÓÚÄ£Ê½µÄ
+	
+*/ 
  
